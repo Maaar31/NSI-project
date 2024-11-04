@@ -36,5 +36,5 @@ def draw():
         cloud.update()
         cloud.display()
 
-if __name__ == '__main__':   #c'est pour pas que le code s'arette 
+if __name__ == '__main__':   #c'est pour pas que le code s'arrette 
     run()
