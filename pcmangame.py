@@ -12,15 +12,14 @@ h = 0  # Angle de la bouche de Pac-Man
 o = 1  # Direction de l'animation de la bouche
 jump = False
 velocity = 0
-gravity = 1
-jump_force = -15
+gravity = 0.6  # Gravité ajustée
+jump_force = -12  # Force du saut ajustée
 
-# Variables pour le cactus
-cactus_x = 500
-cactus_y = 300
-cactus_width = 20
-cactus_height = 50
-cactus_speed = 5
+# Variables pour le fantôme
+ghost_x = 500
+ghost_y = 300
+ghost_width = 60
+ghost_speed = 6  # Vitesse du fantôme augmentée
 
 # Variables d'état du jeu
 score = 0
@@ -56,7 +55,7 @@ def setup():
         clouds.append(Cloud(x, y, cloud_size))
 
 def draw():
-    global pacman_y, velocity, jump, cactus_x, score, game_over, h, o
+    global pacman_y, velocity, jump, ghost_x, score, game_over, h, o
 
     background(135, 206, 235)  # Ciel bleu clair
 
@@ -81,18 +80,17 @@ def draw():
             jump = False
             velocity = 0
 
-    # Dessin du cactus
-    fill(0, 255, 0)
-    rect((cactus_x, cactus_y), cactus_width, cactus_height)
+    # Dessin du fantôme
+    draw_ghost(ghost_x, ghost_y)
 
-    # Mouvement du cactus
-    cactus_x -= cactus_speed
-    if cactus_x < -cactus_width:
-        cactus_x = WIDTH
+    # Mouvement du fantôme
+    ghost_x -= ghost_speed
+    if ghost_x < -ghost_width:
+        ghost_x = WIDTH
         score += 1
 
     # Vérification de la collision
-    if (pacman_x + pacman_diameter / 2 > cactus_x) and (pacman_x < cactus_x + cactus_width) and (pacman_y + pacman_diameter / 2 > cactus_y):
+    if (pacman_x + pacman_diameter / 2 > ghost_x) and (pacman_x - pacman_diameter / 2 < ghost_x + ghost_width) and (pacman_y + pacman_diameter / 2 > ghost_y):
         game_over = True
 
     # Affichage du score
@@ -106,7 +104,7 @@ def draw():
         no_loop()
 
 def key_pressed():
-    global jump, velocity, game_over, pacman_y, velocity, cactus_x, score
+    global jump, velocity, game_over, pacman_y, velocity, ghost_x, score
 
     if key == ' ':
         if game_over:
@@ -114,7 +112,7 @@ def key_pressed():
             pacman_y = 300
             velocity = 0
             jump = False
-            cactus_x = 500
+            ghost_x = 500
             score = 0
             game_over = False
             loop()  # Redémarrer le dessin
@@ -136,6 +134,35 @@ def draw_pacman(x, y):
     h += o
     if h >= 45 or h <= 0:
         o *= -1
+
+def draw_ghost(x, y):
+    # Base du fantôme
+    no_stroke()
+    fill(255, 0, 255)
+    circle(x, y, ghost_width)
+    no_stroke()
+    fill(255, 0, 255)
+    rect((x - 30), y, 60, 40)  # Taille du rect ajustée pour correspondre à la largeur du cercle
+
+    # Les "pattes"
+    for i in range(0, 4):
+        no_stroke()
+        fill(255, 0, 255)
+        circle((x - 22) + (15 * i), (y + 41), 16)  # Les pattes sont ajustées
+
+    # Yeux
+    no_stroke()
+    fill(255)
+    ellipse((x - 22), y, 18, 28)
+    fill(255)
+    ellipse((x + 8), y, 18, 28)
+
+    # Pupilles
+    no_stroke()
+    fill(0)
+    ellipse((x - 25), y, 14, 16)
+    fill(0)
+    ellipse((x + 5), y, 14, 16)
 
 if __name__ == '__main__':
     run()
