@@ -93,7 +93,9 @@ def draw():
 
     # Vérification de la collision
     if (pacman_x + pacman_diameter / 2 > ghost_x) and (pacman_x - pacman_diameter / 2 < ghost_x + ghost_width) and (pacman_y + pacman_diameter / 2 > ghost_y):
+    #if ( pacman_x + pacman_diameter == ghost_x -30 ):
         game_over = True
+
 
     # Affichage du score
     fill(255)
