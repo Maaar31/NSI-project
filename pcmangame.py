@@ -1,4 +1,6 @@
 from p5 import *
+from pydub import AudioSegment
+from pydub.playback import play
 
 # Dimensions de la fenêtre
 WIDTH = 600
@@ -53,6 +55,13 @@ def setup():
         y = random_uniform(HEIGHT / 2)
         cloud_size = random_uniform(80, 150)  # Utilisation de `cloud_size`
         clouds.append(Cloud(x, y, cloud_size))
+    
+    # Charger et jouer la musique de fond
+    try:
+        background_music = AudioSegment.from_file('music.wav')  # Remplacez par le chemin de votre fichier audio
+        play(background_music)  # Lancer la musique en fond
+    except Exception as e:
+        print(f"Erreur lors du chargement du fichier audio : {e}")
 
 def draw():
     global pacman_y, velocity, jump, ghost_x, score, game_over, h, o
