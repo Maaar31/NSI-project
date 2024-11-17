@@ -92,8 +92,11 @@ def draw():
         score += 1
 
     # Vérification de la collision
-    if (pacman_x + pacman_diameter / 2 > ghost_x) and (pacman_x - pacman_diameter / 2 < ghost_x + ghost_width) and (pacman_y + pacman_diameter / 2 > ghost_y):
-    #if ( pacman_x + pacman_diameter == ghost_x -30 ):
+        # le premier calcul detecte la collision à l'avant, 
+        # le deuxieme à l'arriere et 
+        # le dernier au dessus, 
+        # l'origine des sprites se situent au milieu de ceux-ci.
+    if (pacman_x + pacman_diameter / 2 > ghost_x - 20) and (pacman_x - pacman_diameter / 2 < ghost_x + ghost_width /2 ) and (pacman_y + pacman_diameter / 2 > ghost_y):
         game_over = True
 
 
