@@ -71,9 +71,7 @@ class Cactus:
 # Fonction pour jouer la musique de fond en boucle
 def play_background_music():
     while True:
-        winsound.PlaySound("C:/Users/marwe/NSI-project/music.wav", winsound.SND_FILENAME)
-
-
+        winsound.PlaySound("music.wav", winsound.SND_FILENAME)
 
 def setup():
     size(WIDTH, HEIGHT)  # Appelle la fonction size() pour définir la fenêtre
