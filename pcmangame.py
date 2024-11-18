@@ -1,5 +1,6 @@
-from p5 import *
+import winsound
 import random
+from p5 import *
 
 # Dimensions de la fenêtre
 WIDTH = 600
@@ -67,6 +68,13 @@ class Cactus:
         fill(34, 139, 34)  # Couleur verte pour le cactus
         rect(self.x, self.y, 20, self.cactus_height)  # Un cactus basique en rectangle
 
+# Fonction pour jouer la musique de fond en boucle
+def play_background_music():
+    while True:
+        winsound.PlaySound("C:/Users/marwe/NSI-project/music.wav", winsound.SND_FILENAME)
+
+
+
 def setup():
     size(WIDTH, HEIGHT)  # Appelle la fonction size() pour définir la fenêtre
     title("Pac-Man Chrome")
@@ -84,6 +92,12 @@ def setup():
         y = HEIGHT - random.uniform(50, 100)  # Les mettre au sol
         cactus_height = random.uniform(40, 70)  # Hauteur
         cacti.append(Cactus(x, y, cactus_height))
+
+    # Lancer la musique de fond dans un thread séparé pour éviter de bloquer le jeu
+    from threading import Thread
+    music_thread = Thread(target=play_background_music)
+    music_thread.daemon = True
+    music_thread.start()
 
 def draw():
     global pacman_y, velocity, jump, ghost_x, score, game_over, h, o
