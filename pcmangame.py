@@ -6,6 +6,10 @@ from p5 import *
 WIDTH = 600
 HEIGHT = 400
 
+# Variables pour le fond (accélération progressive)
+background_speed_multiplier = 1  # Multiplicateur de vitesse du fond
+background_acceleration = 0.005  # Facteur d'accélération
+
 # Liste pour les nuages et les cactus
 clouds = []
 cacti = []
@@ -25,24 +29,23 @@ jump_force = -12  # Force du saut ajustée
 ghost_x = 500
 ghost_y = 300
 ghost_width = 60
-ghost_speed = 6  # Vitesse du fantôme augmentée
+ghost_speed = 6  # Vitesse du fantôme
 
 # Variables d'état du jeu
 score = 0
 game_over = False
 
-# Liste pour les nuages
-clouds = []
-
+# Classe pour les nuages
 class Cloud:
     def __init__(self, x, y, cloud_size):
         self.x = x
         self.y = y
         self.cloud_size = cloud_size
-        self.speed = random.uniform(1, 3)
+        self.base_speed = random.uniform(1, 3)
 
     def update(self):
-        self.x -= self.speed
+        global background_speed_multiplier
+        self.x -= self.base_speed * background_speed_multiplier
         if self.x < -self.cloud_size:
             self.x = WIDTH + self.cloud_size
 
@@ -51,57 +54,80 @@ class Cloud:
         fill(255, 255, 255, 220)
         ellipse(self.x, self.y, self.cloud_size, self.cloud_size * 0.6)
 
+# Classe pour les cactus
 class Cactus:
     def __init__(self, x, y, cactus_height):
         self.x = x
         self.y = y
         self.cactus_height = cactus_height
-        self.speed = random.uniform(1, 3)
+        self.base_speed = random.uniform(1, 3)
+        self.arm_angle = 0  # Angle initial des bras
 
     def update(self):
-        self.x -= self.speed
+        global background_speed_multiplier
+        self.x -= self.base_speed * background_speed_multiplier
         if self.x < -self.cactus_height:
             self.x = WIDTH + self.cactus_height
+
+        # Mise à jour de l'angle des bras
+        self.arm_angle = sin(frame_count * 0.1) * 20
 
     def display(self):
         no_stroke()
         fill(34, 139, 34)  # Couleur verte pour le cactus
-        rect(self.x, self.y, 20, self.cactus_height)  # Un cactus basique en rectangle
 
-# Fonction pour jouer la musique de fond en boucle
+        # Corps principal du cactus
+        rect(self.x, self.y, 20, self.cactus_height)
+
+        # Bras gauche
+        with push_matrix():
+            translate(self.x + 10, self.y + self.cactus_height / 2)
+            rotate(radians(self.arm_angle))
+            rect(-40, -5, 30, 10)
+
+        # Bras droit
+        with push_matrix():
+            translate(self.x + 10, self.y + self.cactus_height / 2)
+            rotate(radians(-self.arm_angle))
+            rect(10, -5, 30, 10)
+
+# Fonction pour jouer la musique de fond
 def play_background_music():
     while True:
         winsound.PlaySound("music.wav", winsound.SND_FILENAME)
 
 def setup():
-    size(WIDTH, HEIGHT)  # Appelle la fonction size() pour définir la fenêtre
+    size(WIDTH, HEIGHT)
     title("Pac-Man Chrome")
     
     # Création des nuages
     for _ in range(5):
         x = random.uniform(WIDTH, WIDTH * 2)
-        y = random.uniform(0, HEIGHT / 2)  # Correction ici
+        y = random.uniform(0, HEIGHT / 2)
         cloud_size = random.uniform(80, 150)
         clouds.append(Cloud(x, y, cloud_size))
     
     # Création des cactus
-    for _ in range(3):  # Par exemple, trois cactus
+    for _ in range(3):
         x = random.uniform(WIDTH, WIDTH * 2)
-        y = HEIGHT - random.uniform(50, 100)  # Les mettre au sol
-        cactus_height = random.uniform(40, 70)  # Hauteur
+        y = HEIGHT - random.uniform(50, 100)
+        cactus_height = random.uniform(40, 70)
         cacti.append(Cactus(x, y, cactus_height))
 
-    # Lancer la musique de fond dans un thread séparé pour éviter de bloquer le jeu
+    # Lancer la musique de fond dans un thread séparé
     from threading import Thread
     music_thread = Thread(target=play_background_music)
     music_thread.daemon = True
     music_thread.start()
 
 def draw():
-    global pacman_y, velocity, jump, ghost_x, score, game_over, h, o
+    global pacman_y, velocity, jump, ghost_x, score, game_over, h, o, background_speed_multiplier
 
     background(135, 206, 235)  # Couleur de fond bleu ciel
     
+    # Augmenter la vitesse du fond progressivement
+    background_speed_multiplier += background_acceleration
+
     # Mise à jour et affichage des nuages
     for cloud in clouds:
         cloud.update()
@@ -152,7 +178,7 @@ def draw():
         no_loop()
 
 def key_pressed():
-    global jump, velocity, game_over, pacman_y, velocity, ghost_x, score
+    global jump, velocity, game_over, pacman_y, ghost_x, score
 
     if key == ' ':
         if game_over:
@@ -163,9 +189,8 @@ def key_pressed():
             ghost_x = 500
             score = 0
             game_over = False
-            loop()  # Redémarrer le dessin
+            loop()
         elif not jump:
-            # Pac-Man saute
             jump = True
             velocity = jump_force
 
@@ -178,38 +203,25 @@ def draw_pacman(x, y):
     stop_angle = radians(360 - h)
     arc((x, y), pacman_diameter, pacman_diameter, start_angle, stop_angle)
 
-    # Animation de la bouche de Pac-Man
     h += o
     if h >= 45 or h <= 0:
         o *= -1
 
 def draw_ghost(x, y):
-    # Base du fantôme
     no_stroke()
     fill(255, 0, 255)
     circle(x, y, ghost_width)
-    no_stroke()
-    fill(255, 0, 255)
-    rect((x - 30), y, 60, 40)  # Taille du rect ajustée pour correspondre à la largeur du cercle
+    rect((x - 30), y, 60, 40)
 
-    # Les "pattes"
     for i in range(0, 4):
-        no_stroke()
-        fill(255, 0, 255)
-        circle((x - 22) + (15 * i), (y + 41), 16)  # Les pattes sont ajustées
+        circle((x - 22) + (15 * i), (y + 41), 16)
 
-    # Yeux
-    no_stroke()
     fill(255)
     ellipse((x - 22), y, 18, 28)
-    fill(255)
     ellipse((x + 8), y, 18, 28)
 
-    # Pupilles
-    no_stroke()
     fill(0)
     ellipse((x - 25), y, 14, 16)
-    fill(0)
     ellipse((x + 5), y, 14, 16)
 
 if __name__ == '__main__':
