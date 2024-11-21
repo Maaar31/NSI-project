@@ -8,7 +8,7 @@ HEIGHT = 400
 
 # Variables pour le fond (accélération progressive)
 background_speed_multiplier = 1  # Multiplicateur de vitesse du fond
-background_acceleration = 0.005  # Facteur d'accélération
+background_acceleration = 0.01  # Facteur d'accélération
 
 # Liste pour les nuages et les cactus
 clouds = []
@@ -95,6 +95,7 @@ class Cactus:
 def play_background_music():
     while True:
         winsound.PlaySound("music.wav", winsound.SND_FILENAME)
+        
 
 def setup():
     size(WIDTH, HEIGHT)
