@@ -231,3 +231,5 @@ def draw_ghost(x, y):
     fill(0)
     ellipse((x - 10, y - 35), 5, 5)  # Pupille gauche
     ellipse((x + 10, y - 35), 5, 5)  # Pupille droite
+if __name__ == "__main__":
+    run()
