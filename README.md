@@ -1,9 +1,7 @@
 # NSI-project
-Projet pacman de NSI
-Penser à connecter le repository a VScode
-NE PAS OUBLIEZ: 
- afficher ce que vous avez fait dans le trello avec la date
+Projet Pac-Man de NSI
+Penser à connecter le repository à VSCode
+NE PAS OUBLIER : 
+- Afficher ce que vous avez fait dans le Trello avec la date
 
-
-
-#Developpez bien !
+# Développez bien !
